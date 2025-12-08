@@ -70,7 +70,7 @@ function ParentItem({ cat, selected, onToggleCategory }) {
 
 export default function CategoryAccordion({ categories, selected, onToggleCategory }) {
     return (
-        <nav aria-label="Categorias" className="space-y-1">
+        <nav aria-label="Categorías" className="space-y-1">
             {categories.map((c) => (
                 <ParentItem
                     key={c.id}

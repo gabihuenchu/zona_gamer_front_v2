@@ -2,28 +2,29 @@ import { useForm } from "react-hook-form"
 import Navbar from "../Navbar/Navbar"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
+import { AuthService } from "../../services/authService"
 
 const Login = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
-        reset
+        formState: { errors }
     } = useForm({ mode: "onChange" })
 
     const navigate = useNavigate()
     const [loginError, setLoginError] = useState("")
 
-    const onSubmit = (data) => {
-        const isAdmin = data.email === "admin@zonagamer.cl" && data.password === "zonagameradmin"
-
-        if(isAdmin){
-            localStorage.setItem(isAdmin, "true")
-            navigate("/dashboard")
-            return
+    const onSubmit = async (data) => {
+        try {
+            const res = await AuthService.login({ email: data.email, password: data.password })
+            if (res && res.token) {
+                navigate("/dashboard")
+                return
+            }
+            setLoginError("Credenciales inválidas")
+        } catch (e) {
+            setLoginError(e?.data?.message || "Error al iniciar sesión")
         }
-
-        setLoginError("Credenciales invalidas")
     }
 
     return (

@@ -28,7 +28,7 @@ const isBackendAvailable = async () => {
   try {
     const response = await checkHealth();
     return response.status === 'UP';
-  } catch (error) {
+  } catch {
     return false;
   }
 };

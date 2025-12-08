@@ -1,7 +1,18 @@
 import logo from '../../assets/logo_02.png'
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
+import { useEffect, useState } from 'react'
+import { CartService } from '../../services/cartService'
+import { LocalCart } from '../../lib/cart/localCart'
+import { getAuthToken } from '../../services/api'
 
 function Navbar() {
+    const [count, setCount] = useState(0)
+    const location = useLocation()
+    useEffect(() => {
+        const useServer = !!getAuthToken()
+        const fn = useServer ? CartService.getCartItemCount : LocalCart.getItemCount
+        fn().then((n) => setCount(n)).catch(() => setCount(0))
+    }, [location.pathname])
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary bg-dark border-bottom border-body"
             data-bs-theme="dark">
@@ -21,8 +32,7 @@ function Navbar() {
                         {/* NavLink cambia automáticamente la clase a "active" según la ruta */}
                         <NavLink className="nav-link glow-link" to="/" end>Home</NavLink>
                         <NavLink className="nav-link glow-link" to="/productos">Productos</NavLink>
-                        <NavLink className="nav-link glow-link" to="/arma-tu-pc">Arma tu PC</NavLink>
-                        <NavLink className="nav-link glow-link" to="/registro">Registrate</NavLink>
+                        <NavLink className="nav-link glow-link" to="/registro">Regístrate</NavLink>
                     </div>
 
                     <div className="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0" style={{ marginRight: '2rem' }}>
@@ -33,7 +43,7 @@ function Navbar() {
                             Iniciar Sesión
                         </NavLink>
                         
-                        <div className="cart-icon-wrapper" style={{ position: 'relative', cursor: 'pointer' }}>
+                        <NavLink className="cart-icon-wrapper" style={{ position: 'relative', cursor: 'pointer' }} to="/carrito">
                             <svg 
                                 className="cart-icon" 
                                 width="32px" 
@@ -72,9 +82,9 @@ function Navbar() {
                                     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)'
                                 }}
                             >
-                                0
+                                {count}
                             </span>
-                        </div>
+                        </NavLink>
                     </div>
                 </div>
             </div>

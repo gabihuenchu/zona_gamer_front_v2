@@ -3,7 +3,9 @@ import DashboardLayout from '../components/Dashboard/DashboardLayout';
 import ProductsManagement from '../components/Dashboard/ProductsManagement';
 import UsersManagement from '../components/Dashboard/UsersManagement';
 import Settings from '../components/Dashboard/Settings';
-import PCBuilderManagement from '../components/Dashboard/PCBuilderManagement';
+import { OrderService } from '../services/orderService';
+import { UserService } from '../services/userService';
+import { CalendarService } from '../services/calendarService';
 
 const Dashboard = () => {
     const [activeSection, setActiveSection] = useState('products');
@@ -12,8 +14,8 @@ const Dashboard = () => {
         switch (activeSection) {
             case 'products':
                 return <ProductsManagement />;
-            case 'pcbuilder':
-                return <PCBuilderManagement />;
+            case 'users':
+                return <UsersManagement />;
             default:
                 return <ProductsManagement />;
         }

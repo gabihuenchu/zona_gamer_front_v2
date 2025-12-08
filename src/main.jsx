@@ -7,14 +7,15 @@ import Login from './components/Login/Login.jsx';
 import Register from './components/Registro/Registro.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import Dashboard from './pages/DashboardPage.jsx';
-import ArmaTuPC from './pages/ArmaTuPC.jsx';
+// ArmaTuPC eliminado del sitio
+import CartPage from './pages/CartPage.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/productos" element={<ProductPage />} />
-        <Route path="/arma-tu-pc" element={<ArmaTuPC />} />
+        <Route path="/carrito" element={<CartPage />} />
         <Route path='/login' element={<Login/>}/>
         <Route path='/registro' element={<Register/>}/>
         <Route path='/dashboard' element={<Dashboard/>}/>

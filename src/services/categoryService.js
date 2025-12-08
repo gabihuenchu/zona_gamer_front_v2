@@ -18,7 +18,7 @@ const CATEGORY_ENDPOINTS = {
  * @returns {Promise<Array>} Lista de categorías
  */
 const getAllCategories = async () => {
-  return apiRequest(CATEGORY_ENDPOINTS.BASE);
+  return apiRequest(CATEGORY_ENDPOINTS.BASE, { requiresAuth: false });
 };
 
 /**
@@ -26,7 +26,7 @@ const getAllCategories = async () => {
  * @returns {Promise<Array>} Lista de categorías raíz
  */
 const getRootCategories = async () => {
-  return apiRequest(CATEGORY_ENDPOINTS.ROOT);
+  return apiRequest(CATEGORY_ENDPOINTS.ROOT, { requiresAuth: false });
 };
 
 /**
@@ -35,7 +35,7 @@ const getRootCategories = async () => {
  * @returns {Promise<Object>} Datos de la categoría
  */
 const getCategoryById = async (id) => {
-  return apiRequest(CATEGORY_ENDPOINTS.BY_ID(id));
+  return apiRequest(CATEGORY_ENDPOINTS.BY_ID(id), { requiresAuth: false });
 };
 
 /**
@@ -44,7 +44,7 @@ const getCategoryById = async (id) => {
  * @returns {Promise<Array>} Lista de subcategorías
  */
 const getSubcategories = async (parentId) => {
-  return apiRequest(CATEGORY_ENDPOINTS.CHILDREN(parentId));
+  return apiRequest(CATEGORY_ENDPOINTS.CHILDREN(parentId), { requiresAuth: false });
 };
 
 /**

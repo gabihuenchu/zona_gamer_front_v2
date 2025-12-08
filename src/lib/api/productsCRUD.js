@@ -77,6 +77,7 @@ class ProductsCRUDService {
                     
                     resolve(newProduct);
                 } catch (error) {
+                    console.error(error)
                     reject(new Error('Error al crear producto'));
                 }
             }, 400);
@@ -116,6 +117,7 @@ class ProductsCRUDService {
                     
                     resolve(updatedProduct);
                 } catch (error) {
+                    console.error(error)
                     reject(new Error('Error al actualizar producto'));
                 }
             }, 400);
@@ -142,6 +144,7 @@ class ProductsCRUDService {
                     this.saveToStorage(filteredProducts);
                     resolve({ success: true, id });
                 } catch (error) {
+                    console.error(error)
                     reject(new Error('Error al eliminar producto'));
                 }
             }, 300);

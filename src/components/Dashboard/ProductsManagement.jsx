@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { fetchCategories } from '../../lib/api/productsApi';
 import { productsCRUD } from '../../lib/api/productsCRUD';
+import { ProductService } from '../../services/productService';
+import { CategoryService } from '../../services/categoryService';
 
 const ProductsManagement = () => {
     // Estados de modales
@@ -81,6 +83,7 @@ const ProductsManagement = () => {
             setShowAddModal(false);
             resetForm();
         } catch (err) {
+            console.error(err)
             alert('Error al agregar producto');
         }
     };
@@ -107,6 +110,7 @@ const ProductsManagement = () => {
             setSelectedProduct(null);
             resetForm();
         } catch (err) {
+            console.error(err)
             alert('Error al actualizar producto');
         }
     };
@@ -123,6 +127,7 @@ const ProductsManagement = () => {
             setShowDeleteModal(false);
             setSelectedProduct(null);
         } catch (err) {
+            console.error(err)
             alert('Error al eliminar producto');
         }
     };
@@ -151,6 +156,7 @@ const ProductsManagement = () => {
                 await loadData();
                 alert('Productos reseteados exitosamente');
             } catch (err) {
+                console.error(err)
                 alert('Error al resetear productos');
             }
         }

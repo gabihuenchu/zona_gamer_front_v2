@@ -1,9 +1,9 @@
 /** Tailwind config: activa plugins útiles para esta UI */
-module.exports = {
+import lineClamp from '@tailwindcss/line-clamp';
+import forms from '@tailwindcss/forms';
+
+export default {
     content: ['./index.html', './src/**/*.{js,jsx}'],
     theme: { extend: {} },
-    plugins: [
-        require('@tailwindcss/line-clamp'),
-        require('@tailwindcss/forms'),
-    ],
+    plugins: [lineClamp, forms],
 };

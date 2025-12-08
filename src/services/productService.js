@@ -20,7 +20,7 @@ const PRODUCT_ENDPOINTS = {
  * @returns {Promise<Array>} Lista de productos
  */
 const getAllProducts = async () => {
-  return apiRequest(PRODUCT_ENDPOINTS.BASE);
+  return apiRequest(PRODUCT_ENDPOINTS.BASE, { requiresAuth: false });
 };
 
 /**
@@ -29,7 +29,7 @@ const getAllProducts = async () => {
  * @returns {Promise<Object>} Datos del producto
  */
 const getProductById = async (id) => {
-  return apiRequest(PRODUCT_ENDPOINTS.BY_ID(id));
+  return apiRequest(PRODUCT_ENDPOINTS.BY_ID(id), { requiresAuth: false });
 };
 
 /**
@@ -38,7 +38,7 @@ const getProductById = async (id) => {
  * @returns {Promise<Array>} Lista de productos de la categoría
  */
 const getProductsByCategory = async (categoryId) => {
-  return apiRequest(PRODUCT_ENDPOINTS.BY_CATEGORY(categoryId));
+  return apiRequest(PRODUCT_ENDPOINTS.BY_CATEGORY(categoryId), { requiresAuth: false });
 };
 
 /**
@@ -46,7 +46,7 @@ const getProductsByCategory = async (categoryId) => {
  * @returns {Promise<Array>} Lista de productos destacados
  */
 const getFeaturedProducts = async () => {
-  return apiRequest(PRODUCT_ENDPOINTS.FEATURED);
+  return apiRequest(PRODUCT_ENDPOINTS.FEATURED, { requiresAuth: false });
 };
 
 /**
@@ -59,7 +59,7 @@ const searchProducts = async (searchTerm) => {
   if (searchTerm.length < 2) {
     throw new Error('El término de búsqueda debe tener al menos 2 caracteres');
   }
-  return apiRequest(`${PRODUCT_ENDPOINTS.SEARCH}?q=${encodeURIComponent(searchTerm)}`);
+  return apiRequest(`${PRODUCT_ENDPOINTS.SEARCH}?q=${encodeURIComponent(searchTerm)}`, { requiresAuth: false });
 };
 
 /**

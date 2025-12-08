@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form"
-import { data } from "react-router-dom"
 import Navbar from "../Navbar/Navbar"
 
 const Register = () => {

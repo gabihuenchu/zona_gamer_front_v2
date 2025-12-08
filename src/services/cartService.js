@@ -97,7 +97,7 @@ const getCartItemCount = async () => {
   try {
     const cart = await getCart();
     return cart.totalItems || 0;
-  } catch (error) {
+  } catch {
     return 0;
   }
 };

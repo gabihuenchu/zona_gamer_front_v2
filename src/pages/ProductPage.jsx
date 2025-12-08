@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useProducts } from '../hooks/useProducts';
 import { useCategories } from '../hooks/useCategories';
+import { ProductService } from '../services/productService';
+import { CategoryService } from '../services/categoryService';
 import FeaturedProducts from "../components/Products/FeaturedProducts";
 import ProductGrid from '../components/Products/ProductGrid';
 import CategoryAccordion from "../components/Products/CategoryAccordion";
@@ -69,7 +71,7 @@ export default function ProductPage() {
                     </h2>
                     {loadingCats ? (
                         <div className="flex items-center justify-center py-8">
-                            <p className="text-sm text-neutral-500">Cargando categorias...</p>
+                            <p className="text-sm text-neutral-500">Cargando categorías...</p>
                         </div>
                     ) : (
                         <CategoryAccordion

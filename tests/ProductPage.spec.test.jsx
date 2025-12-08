@@ -104,7 +104,7 @@ describe('ProductPage', () => {
     }
   });
 
-  it('muestra mensaje de carga de categorias', () => {
+  it('muestra mensaje de carga de categorías', () => {
     vi.spyOn(categoriesHook, 'useCategories').mockReturnValue({
       categories: [],
       loading: true,
@@ -117,7 +117,7 @@ describe('ProductPage', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/cargando categorias/i)).toBeInTheDocument();
+    expect(screen.getByText(/cargando categorías/i)).toBeInTheDocument();
   });
 
   it('filtra productos por nombre al escribir en el buscador', async () => {

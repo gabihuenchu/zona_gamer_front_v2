@@ -1,5 +1,5 @@
 import React, { act } from "react";
-import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import App from "../src/pages/App";
 import { BrowserRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -137,7 +137,7 @@ describe('App (Home Page)', () => {
         });
 
         it('limpia el intervalo al desmontar el componente', () => {
-            const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
+            const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval');
             const { unmount } = renderWithRouter(<App />);
 
             unmount();
