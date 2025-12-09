@@ -10,9 +10,9 @@ class UsersCRUDService {
     const local = localStorage.getItem(STORAGE_KEY)
     if (!local) {
       const seed = [
-        { id: 'u1', name: 'Juan Pérez', email: 'juan@example.com', role: 'admin', status: 'active', password: '123' },
-        { id: 'u2', name: 'María García', email: 'maria@example.com', role: 'user', status: 'active', password: '123' },
-        { id: 'u3', name: 'Carlos López', email: 'carlos@example.com', role: 'user', status: 'inactive', password: '123' },
+        { id: 'u1', name: 'Juan Pérez', email: 'juan@example.com', role: 'admin', status: 'active', active: true, password: '123' },
+        { id: 'u2', name: 'María García', email: 'maria@example.com', role: 'user', status: 'active', active: true, password: '123' },
+        { id: 'u3', name: 'Carlos López', email: 'carlos@example.com', role: 'user', status: 'inactive', active: false, password: '123' },
       ]
       this.save(seed)
     }
@@ -43,6 +43,7 @@ class UsersCRUDService {
             email: data.email,
             role: data.role || 'user',
             status: data.status || 'active',
+            active: (typeof data.active === 'boolean') ? data.active : (data.status ? data.status === 'active' : true),
             password: data.password, // Añadido para autenticación local
           }
           list.push(user)
@@ -98,7 +99,7 @@ class UsersCRUDService {
     return {
       total: list.length,
       admins: list.filter((u) => u.role === 'admin').length,
-      active: list.filter((u) => u.status === 'active').length,
+      active: list.filter((u) => (u.active === true) || (u.status === 'active')).length,
     }
   }
 

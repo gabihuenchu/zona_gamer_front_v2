@@ -11,6 +11,7 @@ import Dashboard from './pages/DashboardPage.jsx';
 import CartPage from './pages/CartPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import CheckoutPage from './pages/CheckoutPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <BrowserRouter>
@@ -20,7 +21,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/carrito" element={<CartPage />} />
         <Route path='/login' element={<Login/>}/>
         <Route path='/registro' element={<Register/>}/>
-        <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/dashboard' element={<ProtectedRoute requireAdmin={true}><Dashboard/></ProtectedRoute>}/>
         <Route path='/perfil' element={<ProfilePage/>}/>
         <Route path='/checkout' element={<CheckoutPage/>}/>
       </Routes>

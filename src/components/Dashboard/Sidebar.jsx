@@ -1,4 +1,14 @@
+import { useNavigate } from 'react-router-dom';
+import { AuthService } from '../../services/authService';
+
 const Sidebar = ({ activeSection, setActiveSection }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        AuthService.logout();
+        navigate('/login');
+    };
+
     const menuItems = [
         {
             id: 'products',
@@ -57,7 +67,12 @@ const Sidebar = ({ activeSection, setActiveSection }) => {
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-800 leading-tight">Admin</p>
                         <p className="text-xs text-gray-500 leading-tight">Administrador</p>
-                        <a href="/registro" className="text-xs text-gray-500 leading-tight">Salir</a>
+                        <button 
+                            onClick={handleLogout} 
+                            className="text-xs text-red-500 hover:text-red-700 font-medium leading-tight transition-colors mt-1"
+                        >
+                            Cerrar Sesión
+                        </button>
                     </div>
                 </div>
             </div>

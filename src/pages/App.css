@@ -663,19 +663,9 @@ body {
         justify-content: flex-start;
     }
 }
-/* ==== Tipografía Mokoto (local) ==== */
-@font-face {
-  font-family: 'Mokoto';
-  src: url('/src/assets/Mokoto.ttf') format('truetype'),
-       url('/src/assets/Mokoto.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* Aplicar Mokoto a todos los títulos */
+/* Tipografía principal para títulos */
 h1, h2, h3, h4 {
-  font-family: 'Mokoto', 'Orbitron', 'Rajdhani', sans-serif;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
 }
 
 /* === Navbar Mokoto & Glow === */
@@ -685,7 +675,7 @@ h1, h2, h3, h4 {
 }
 
 .navbar .mokoto-brand {
-  font-family: 'Mokoto', 'Orbitron', 'Rajdhani', sans-serif;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
   font-size: 1.4rem;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -694,7 +684,7 @@ h1, h2, h3, h4 {
 }
 
 .navbar .glow-link {
-  font-family: 'Mokoto', 'Orbitron', 'Rajdhani', sans-serif;
+  font-family: 'Orbitron', 'Rajdhani', sans-serif;
   color: rgba(242, 97, 199, 0.85);
   letter-spacing: 1px;
   text-transform: uppercase;

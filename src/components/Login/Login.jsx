@@ -3,7 +3,9 @@ import Navbar from "../Navbar/Navbar"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { AuthService } from "../../services/authService"
+import { setAuthToken } from "../../services/api"
 import { usersCRUD } from "../../lib/api/usersCRUD"
+import { UserService } from "../../services/userService"
 
 const Login = () => {
     const {
@@ -28,15 +30,30 @@ const Login = () => {
 
             // Si API devuelve token, éxito
             if (res && res.token) {
-                // Verificar rol en la respuesta API si existe, o asumir dashboard si es admin
-                // Ajuste rápido: si la API no devuelve rol claro, redirigir a dashboard por defecto si es la intención original,
-                // pero el usuario pide restricción. Asumiremos que si hay token API es válido, pero revisaremos rol si viene.
-                const userRole = res.rol || res.role || 'user';
-                
-                // Pequeño delay para asegurar que el alert se renderice/procese antes de navegar
+                // Detectar admin por múltiples campos
+                let isAdmin = res.admin === true || res.isAdmin === true;
+                let userRole = res.rol || res.role;
+
+                // Si no hay info suficiente en la respuesta de login, intentar perfil
+                if (!isAdmin && !userRole) {
+                    try {
+                        const profile = await UserService.getMyProfile();
+                        if (profile) {
+                            isAdmin = profile.admin === true || profile.isAdmin === true;
+                            userRole = profile.rol || profile.role;
+                            const currentData = JSON.parse(localStorage.getItem('userData') || '{}');
+                            localStorage.setItem('userData', JSON.stringify({ ...currentData, ...profile }));
+                        }
+                    } catch (err) {
+                        console.error("Error obteniendo perfil tras login:", err);
+                    }
+                }
+
+                userRole = userRole || 'user';
+
                 setTimeout(() => {
                     alert("Inicio de sesión exitoso")
-                    if (userRole === 'admin' || userRole === 'ROLE_ADMIN') {
+                    if (isAdmin || userRole === 'admin' || userRole === 'ROLE_ADMIN') {
                         navigate("/dashboard")
                     } else {
                         navigate("/")
@@ -52,6 +69,7 @@ const Login = () => {
             if (localUser) {
                 // Simular sesión local
                 localStorage.setItem('userData', JSON.stringify({ ...localUser, token: 'local-token' }))
+                setAuthToken('local-token')
                 
                 setTimeout(() => {
                     alert("Inicio de sesión exitoso")

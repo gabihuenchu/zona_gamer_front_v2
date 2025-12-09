@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form"
 import Navbar from "../Navbar/Navbar"
 import { usersCRUD } from "../../lib/api/usersCRUD"
+import { AuthService } from "../../services/authService"
 import { useNavigate } from "react-router-dom"
 
 const Register = () => {
@@ -17,14 +18,32 @@ const Register = () => {
 
     const onSubmit = async (data) => {
         try {
+            let apiSuccess = false;
+            try {
+                await AuthService.register({
+                    nombre: data.nombre,
+                    apellido: data.apellido,
+                    email: data.email,
+                    password: data.password
+                });
+                apiSuccess = true;
+                alert("Registro exitoso");
+                navigate("/login");
+            } catch (error) {
+                console.warn("API register failed, trying local", error);
+            }
+
+            if (apiSuccess) return;
+
             await usersCRUD.create({
-                name: data.username,
+                name: `${data.nombre} ${data.apellido}`.trim(),
                 email: data.email,
                 role: 'user',
                 status: 'active',
+                active: true,
                 password: data.password // Guardamos la contraseña para el login local
             })
-            alert("Registro exitoso")
+            alert("Registro local exitoso")
             navigate("/login")
         } catch (error) {
             console.error(error)
@@ -45,30 +64,40 @@ const Register = () => {
                         <p className="text-sm text-slate-500 mt-1">Ingresa tus credenciales para registrarte</p>
                     </div>
                     <div className="p-3">
-                        <label className="block text-gray-200 font-medium mb-2" htmlFor="username">Nombre de usuario</label>
+                        <label className="block text-gray-200 font-medium mb-2" htmlFor="nombre">Nombre</label>
                         <input
-                            {...register("username", {
-                                required: "El nombre de usuario es obligatorio",
-                                minLength: {
-                                    value: 3,
-                                    message: "El largo minimo del nombre de usuario debe ser de almenos 3 caracteres"
-                                },
-                                maxLength: {
-                                    value: 21,
-                                    message: "El nombre de usuario excede el maximo de 20 caracteres"
-                                }
+                            {...register("nombre", {
+                                required: "El nombre es obligatorio",
+                                minLength: { value: 2, message: "Nombre demasiado corto" },
+                                maxLength: { value: 40, message: "Nombre demasiado largo" }
                             })}
                             className={`w-full px-3 py-3 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition text-sm
-                            ${errors.email ? "border-red-500 ring-2 ring-red-400" : "border-gray-600 focus:ring-pink-500 focus:border-pink-500"}`}
-                            autoComplete="username"
-                            name="username"
-                            placeholder="Nombre de usuario"
+                            ${errors.nombre ? "border-red-500 ring-2 ring-red-400" : "border-gray-600 focus:ring-pink-500 focus:border-pink-500"}`}
+                            autoComplete="given-name"
+                            name="nombre"
+                            placeholder="Nombre"
                             type="text" />
-                        {
-                            errors.username && (
-                                <p className="text-red-500 text-sm mt-2 ml-2">{errors.username.message}</p>
-                            )
-                        }
+                        {errors.nombre && (
+                            <p className="text-red-500 text-sm mt-2 ml-2">{errors.nombre.message}</p>
+                        )}
+                    </div>
+                    <div className="p-3">
+                        <label className="block text-gray-200 font-medium mb-2" htmlFor="apellido">Apellido</label>
+                        <input
+                            {...register("apellido", {
+                                required: "El apellido es obligatorio",
+                                minLength: { value: 2, message: "Apellido demasiado corto" },
+                                maxLength: { value: 40, message: "Apellido demasiado largo" }
+                            })}
+                            className={`w-full px-3 py-3 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition text-sm
+                            ${errors.apellido ? "border-red-500 ring-2 ring-red-400" : "border-gray-600 focus:ring-pink-500 focus:border-pink-500"}`}
+                            autoComplete="family-name"
+                            name="apellido"
+                            placeholder="Apellido"
+                            type="text" />
+                        {errors.apellido && (
+                            <p className="text-red-500 text-sm mt-2 ml-2">{errors.apellido.message}</p>
+                        )}
                     </div>
                     <div className="p-3">
                         <label className="block text-gray-200 font-medium mb-2" htmlFor="password">Contraseña</label>
@@ -85,7 +114,7 @@ const Register = () => {
                                 }
                             })}
                             className={`w-full px-3 py-3 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition text-sm
-                            ${errors.email ? "border-red-500 ring-2 ring-red-400" : "border-gray-600 focus:ring-pink-500 focus:border-pink-500"}`}
+                            ${errors.password ? "border-red-500 ring-2 ring-red-400" : "border-gray-600 focus:ring-pink-500 focus:border-pink-500"}`}
                             autoComplete="current-password"
                             name="password"
                             placeholder="Contraseña"

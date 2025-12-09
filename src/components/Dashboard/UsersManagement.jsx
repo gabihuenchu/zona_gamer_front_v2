@@ -127,7 +127,7 @@ const UsersManagement = () => {
                                             <span className={`px-3 py-1 text-xs font-medium rounded-full ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-800'}`}>{user.role === 'admin' ? 'Administrador' : 'Usuario'}</span>
                                         </td>
                                         <td className="!px-8 !py-4 whitespace-nowrap">
-                                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{user.status === 'active' ? 'Activo' : 'Inactivo'}</span>
+                                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${(user.active === true || user.status === 'active') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{(user.active === true || user.status === 'active') ? 'Activo' : 'Inactivo'}</span>
                                         </td>
                                         <td className="!px-8 !py-4 whitespace-nowrap">
                                             <div className="flex gap-2">

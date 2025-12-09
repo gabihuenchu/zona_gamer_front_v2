@@ -215,8 +215,8 @@ export default function ProfilePage() {
 
                                         <div className="mb-3">
                                             <label className="small text-muted d-block">Estado de Cuenta</label>
-                                            <span className={`badge ${user.status === 'active' ? 'bg-success' : 'bg-secondary'}`}>
-                                                {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                                            <span className={`badge ${(user.active === true || user.status === 'active') ? 'bg-success' : 'bg-secondary'}`}>
+                                                {(user.active === true || user.status === 'active') ? 'Activo' : 'Inactivo'}
                                             </span>
                                         </div>
                                     </div>

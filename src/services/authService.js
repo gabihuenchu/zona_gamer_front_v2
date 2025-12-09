@@ -90,7 +90,8 @@ const getCurrentUser = () => {
  */
 const isAdmin = () => {
   const user = getCurrentUser();
-  return user?.rol === 'ROLE_ADMIN';
+  const role = user?.rol || user?.role;
+  return role === 'ROLE_ADMIN' || role === 'admin' || user?.isAdmin === true || user?.admin === true;
 };
 
 /**

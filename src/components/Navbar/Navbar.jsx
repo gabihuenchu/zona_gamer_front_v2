@@ -1,9 +1,9 @@
 import logo from '../../assets/logo_02.png'
-import { NavLink, useLocation, useNavigate, Link } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react'
 import { CartService } from '../../services/cartService'
 import { LocalCart } from '../../lib/cart/localCart'
-import { getAuthToken } from '../../services/api'
+import { getAuthToken, isServerAuthToken } from '../../services/api'
 import { UserService } from '../../services/userService'
 import { AuthService } from '../../services/authService'
 
@@ -11,10 +11,13 @@ function Navbar() {
     const [count, setCount] = useState(0)
     const [user, setUser] = useState(null)
     const location = useLocation()
-    const navigate = useNavigate()
+  const navigate = useNavigate()
+
+  
 
     useEffect(() => {
-        const useServer = !!getAuthToken()
+        const token = getAuthToken()
+        const useServer = isServerAuthToken(token)
         const fn = useServer ? CartService.getCartItemCount : LocalCart.getItemCount
         fn().then((n) => setCount(n)).catch(() => setCount(0))
         
@@ -25,16 +28,19 @@ function Navbar() {
         try {
             // Intentar obtener usuario desde API
             const token = getAuthToken();
-            if (token) {
+            if (isServerAuthToken(token)) {
                  try {
                      const profile = await UserService.getMyProfile();
-                     if (profile) {
-                         setUser(profile)
-                         return
-                     }
-                 } catch (e) {
-                     // Fallo API, intentar local
-                 }
+                    if (profile) {
+                        setUser(profile)
+                        // Actualizar localStorage para asegurar que AuthService.isAdmin tenga datos frescos
+                        const currentData = JSON.parse(localStorage.getItem('userData') || '{}');
+                        localStorage.setItem('userData', JSON.stringify({ ...currentData, ...profile }));
+                        return
+                    }
+                } catch {
+                    // Fallo API, intentar local
+                }
             }
             
             // Intentar local storage
@@ -55,6 +61,8 @@ function Navbar() {
         setUser(null)
         navigate('/login')
     }
+
+  
 
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary bg-dark border-bottom border-body"
@@ -78,52 +86,14 @@ function Navbar() {
                         {!user && <NavLink className="nav-link glow-link" to="/registro">Regístrate</NavLink>}
                     </div>
 
-                    <div className="d-flex align-items-center gap-3 ms-lg-auto mt-3 mt-lg-0" style={{ marginRight: '2rem' }}>
+                    <div className="d-flex align-items-center gap-3 mt-3 mt-lg-0">
                         {user ? (
-                            <div className="dropdown">
-                                <button className="btn btn-outline-light dropdown-toggle d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <>
+                                <NavLink className="btn btn-outline-light d-flex align-items-center gap-2" to="/perfil">
                                     <span className="fw-semibold">Mi Perfil</span>
-                                </button>
-                                <ul className="dropdown-menu dropdown-menu-end p-3" style={{ minWidth: '250px' }}>
-                                    <li>
-                                        <div className="d-flex flex-col gap-1 mb-2 border-bottom pb-2">
-                                            <span className="fw-bold text-dark">{user.name || 'Usuario'}</span>
-                                            <span className="text-muted small">{user.email}</span>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <button 
-                                            className="dropdown-item" 
-                                            type="button"
-                                            onClick={() => {
-                                                navigate('/perfil');
-                                                // Intentar cerrar el menú si está abierto (Bootstrap)
-                                                const toggleBtn = document.querySelector('.dropdown-toggle[aria-expanded="true"]');
-                                                if(toggleBtn) toggleBtn.click();
-                                            }}
-                                        >
-                                            Ver Perfil Completo
-                                        </button>
-                                    </li>
-                                    {user.role === 'admin' || user.role === 'ROLE_ADMIN' ? (
-                                        <li>
-                                            <button 
-                                                className="dropdown-item" 
-                                                type="button"
-                                                onClick={() => {
-                                                    navigate('/dashboard');
-                                                    const toggleBtn = document.querySelector('.dropdown-toggle[aria-expanded="true"]');
-                                                    if(toggleBtn) toggleBtn.click();
-                                                }}
-                                            >
-                                                Panel Admin
-                                            </button>
-                                        </li>
-                                    ) : null}
-                                    <li><hr className="dropdown-divider" /></li>
-                                    <li><button className="dropdown-item text-danger" onClick={handleLogout}>Cerrar Sesión</button></li>
-                                </ul>
-                            </div>
+                                </NavLink>
+                                <button className="btn btn-outline-danger me-4" onClick={handleLogout}>Cerrar Sesión</button>
+                            </>
                         ) : (
                             <NavLink 
                                 className={({ isActive }) => `nav-link glow-link ${isActive ? 'active' : ''}`}
@@ -132,8 +102,9 @@ function Navbar() {
                                 Iniciar Sesión
                             </NavLink>
                         )}
-                        
-                        <NavLink className="cart-icon-wrapper" style={{ position: 'relative', cursor: 'pointer' }} to="/carrito">
+                    </div>
+                    <div className="d-flex align-items-center ms-lg-auto" style={{ marginRight: '2rem' }}>
+                        <NavLink className="cart-icon-wrapper" style={{ position: 'relative', cursor: 'pointer', zIndex: 1 }} to="/carrito">
                             <svg 
                                 className="cart-icon" 
                                 width="32px" 

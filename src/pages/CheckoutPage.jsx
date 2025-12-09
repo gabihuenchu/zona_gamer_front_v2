@@ -4,8 +4,7 @@ import Navbar from '../components/Navbar/Navbar'
 import { UserService } from '../services/userService'
 import { CartService } from '../services/cartService'
 import { LocalCart } from '../lib/cart/localCart'
-import { getAuthToken } from '../services/api'
-import { usersCRUD } from '../lib/api/usersCRUD'
+import { getAuthToken, isServerAuthToken } from '../services/api'
 
 export default function CheckoutPage() {
     const [user, setUser] = useState(null)
@@ -30,7 +29,7 @@ export default function CheckoutPage() {
                 // Intentar API
                 const profile = await UserService.getMyProfile()
                 if (profile) currentUser = profile
-            } catch (e) {
+            } catch {
                 // Fallo API, intentar local
             }
 
@@ -48,7 +47,8 @@ export default function CheckoutPage() {
             setFormData(prev => ({ ...prev, address: currentUser.address || '' }))
 
             // 2. Cargar Carrito (solo para el resumen)
-            const useServer = !!getAuthToken()
+            const token = getAuthToken()
+            const useServer = isServerAuthToken(token)
             const c = useServer ? await CartService.getCart() : await LocalCart.getCart()
             const items = Array.isArray(c.items) ? c.items : []
             const totalPrice = c.totalPrice || items.reduce((s, i) => s + (Number(i.price || 0) * (i.quantity || 0)), 0)
@@ -88,8 +88,11 @@ export default function CheckoutPage() {
         // Opcional: Actualizar dirección del usuario si cambió
         if (user.id && formData.address !== user.address) {
              try {
-                await usersCRUD.update(user.id, { address: formData.address })
-                // Actualizar localStorage
+                const token = getAuthToken()
+                const useServer = isServerAuthToken(token)
+                if (useServer) {
+                    await UserService.updateMyProfile({ address: formData.address })
+                }
                 const updatedUser = { ...user, address: formData.address }
                 localStorage.setItem('userData', JSON.stringify(updatedUser))
              } catch (e) {
@@ -100,7 +103,8 @@ export default function CheckoutPage() {
         alert("¡Pedido realizado con éxito!\n\nGracias por tu compra.")
         
         // Vaciar carrito
-        const useServer = !!getAuthToken()
+        const token = getAuthToken()
+        const useServer = isServerAuthToken(token)
         if (useServer) await CartService.clearCart()
         else await LocalCart.clearCart()
 
