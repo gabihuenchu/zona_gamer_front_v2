@@ -13,6 +13,10 @@ export default defineConfig({
     tailwindcss()
   ],
   base: "/",
+  css: {
+    transformer: 'postcss',
+  },
+  logLevel: 'error',
   test: {
     globals: true,
     environment: 'jsdom',

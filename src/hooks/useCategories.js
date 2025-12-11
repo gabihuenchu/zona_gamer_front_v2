@@ -1,41 +1,39 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CategoryService } from '../services/categoryService';
 
-// Carga de categorías (una sola vez)
-export function useCategories() {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const useCategories = () => {
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    setError(null);
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoading(true);
+                const data = await CategoryService.getAllCategories();
 
-    const mapTree = (nodes) =>
-      (nodes || []).map((n) => ({
-        id: n.id ?? n.categoriaId ?? n.categoryId ?? n._id ?? String(Math.random()),
-        name: n.name ?? n.nombreCategoria ?? n.title ?? 'Categoría',
-        children: mapTree(n.children ?? n.subcategorias ?? []),
-      }));
+                // Asegurar que cada categoría tenga el campo 'children'
+                const categoriesWithChildren = data.map(cat => ({
+                    id: cat.id,
+                    nombreCategoria: cat.nombreCategoria,
+                    parentId: cat.parentId,
+                    active: cat.active,
+                    children: [] // Campo necesario para el acordeón
+                }));
 
-    
+                setCategories(categoriesWithChildren);
+                setError(null);
+            } catch (err) {
+                console.error('Error al cargar categorías:', err);
+                setError(err.message);
+                setCategories([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    CategoryService.getCategoryTree()
-      .then((tree) => {
-        if (!mounted) return;
-        const normalized = Array.isArray(tree) ? mapTree(tree) : [];
-        setData(normalized);
-      })
-      .catch((e) => {
-        if (!mounted) return;
-        setError(e);
-      });
+        fetchCategories();
+    }, []);
 
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  return { categories: data, loading, error };
-}
+    return { categories, loading, error };
+};

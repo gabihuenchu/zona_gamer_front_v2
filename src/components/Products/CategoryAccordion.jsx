@@ -5,7 +5,7 @@ function CategoryItem({ category, selected, onToggleCategory, isChild = false })
     
     return (
         <label
-            className={`flex items-center gap-2.5 cursor-pointer text-sm rounded-md px-3 py-2 transition-colors hover:bg-gray-700/40 ${
+            className={`flex items-center gap-2. 5 cursor-pointer text-sm rounded-md px-3 py-2 transition-colors hover:bg-gray-700/40 ${
                 isChild ? 'ml-4' : ''
             }`}
         >
@@ -28,7 +28,7 @@ function CategoryItem({ category, selected, onToggleCategory, isChild = false })
             />
             <span className="flex-1 text-gray-900 font-medium">
                 {isChild && '↳ '}
-                {category.name}
+                {category. nombreCategoria}
             </span>
         </label>
     );
@@ -36,11 +36,13 @@ function CategoryItem({ category, selected, onToggleCategory, isChild = false })
 
 function ParentItem({ cat, selected, onToggleCategory }) {
     const [open, setOpen] = useState(true);
-    const hasChildren = cat.children && cat.children.length > 0;
+    
+    // ✅ Validación robusta
+    const hasChildren = cat.children && Array.isArray(cat.children) && cat.children.length > 0;
     const hasSelected = hasChildren && cat.children.some(child => selected.includes(child.id));
 
     // Si NO tiene hijos, renderizar como categoría simple
-    if (!hasChildren) {
+    if (! hasChildren) {
         return <CategoryItem category={cat} selected={selected} onToggleCategory={onToggleCategory} />;
     }
 
@@ -51,19 +53,19 @@ function ParentItem({ cat, selected, onToggleCategory }) {
                 type="button"
                 onClick={() => setOpen((o) => !o)}
                 className={`w-full flex items-center justify-between py-3 px-2 text-sm font-semibold rounded-md transition-colors hover:bg-neutral-50 ${
-                    hasSelected ? 'text-emerald-700' : 'text-neutral-800'
+                    hasSelected ?  'text-emerald-700' : 'text-neutral-800'
                 }`}
                 aria-expanded={open}
                 aria-controls={`panel-${cat.id}`}
             >
                 <span className="flex items-center gap-2">
-                    {cat.name}
+                    {cat.nombreCategoria}
                     {hasSelected && (
                         <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
                     )}
                 </span>
                 <svg
-                    className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`}
+                    className={`w-4 h-4 transition-transform ${open ? 'rotate-180' :  ''}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -96,7 +98,7 @@ export default function CategoryAccordion({ categories, selected, onToggleCatego
         <nav aria-label="Categorías" className="space-y-1">
             {categories.map((c) => (
                 <ParentItem
-                    key={c.id}
+                    key={c. id}
                     cat={c}
                     selected={selected}
                     onToggleCategory={onToggleCategory}

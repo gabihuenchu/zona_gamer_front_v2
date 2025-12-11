@@ -17,7 +17,7 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         loadData()
-    }, [loadData])
+    }, [])
 
     const loadData = useCallback(async () => {
         setLoading(true)

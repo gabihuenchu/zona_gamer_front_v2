@@ -5,7 +5,8 @@ Aplicación web de ZonaGamer construida con React + Vite. Incluye catálogo de p
 Tecnologías
 - React 19, React Router DOM 7
 - Vite 7
-- TailwindCSS 4 y Bootstrap 5
+- TailwindCSS 4, DaisyUI 5 y Bootstrap 5
+- Axios
 - Vitest (tests) y ESLint
 
 Scripts
@@ -15,6 +16,16 @@ Scripts
 - `npm run test`: ejecuta pruebas
 - `npm run test:coverage`: cobertura de pruebas
 - `npm run lint`: linting del proyecto
+
+Configuración
+- Variables de entorno: crear `.env` con `VITE_API_URL` apuntando a la API, por ejemplo:
+  - `VITE_API_URL=http://3.236.11.196:8080/api`
+
+Arquitectura de datos (API-only)
+- Hooks: `src/hooks/useProducts.js` y `src/hooks/useCategories.js` consumen servicios HTTP.
+- Servicios: `src/services/productService.js`, `src/services/categoryService.js`, `src/services/userService.js`, `src/services/orderService.js`, `src/services/authService.js`, `src/services/api.js`.
+- Cliente API: `src/lib/api/productsApi.js` (axios).
+- Sin dependencias locales previas (`productsCRUD.js`, `localCart.js`, etc.).
 
 Estructura principal
 - `src/pages/App.jsx`: página principal
@@ -27,7 +38,7 @@ Estructura principal
 - `src/components/Navbar/Navbar.jsx`: barra de navegación
 - `src/components/Login/Login.jsx` y `src/components/Registro/Registro.jsx`: auth UI
 - `src/hooks/useProducts.js` y `src/hooks/useCategories.js`: hooks de datos
-- `src/lib/api/productsApi.js` y `src/lib/api/productsCRUD.js`: capa de API de productos
+- `src/lib/api/productsApi.js`: cliente API de productos
 - `src/data/pcBuilder.js`: datos compartidos del configurador (opciones e imágenes)
 - `src/pages/App.css`: estilos del configurador y ajustes visuales
 
@@ -44,14 +55,14 @@ Implementación inspirada en HyperPC con selección por tarjetas, miniaturas y r
 - Miniatura del componente seleccionado y carrusel de gabinete.
 - Resumen y total dinámico.
 
-Archivos clave:
+Archivos clave
 - `src/pages/ArmaTuPC.jsx`: UI y lógica de selección.
 - `src/data/pcBuilder.js`: define `PC_COMPONENTS` y `PC_COMPONENT_IMAGES` para reutilización.
 
-Imágenes mapeadas:
+Imágenes mapeadas
 - Gabinete: `gabinete01.png`, `gabinete02.png`, `gabinete03.png` (Asus TUF GT502/302/301)
-- CPU: `https://hyperpc.cl/wp-content/uploads/2025/04/intel-core-i5-14-300x300.jpg` (para todas las opciones de CPU)
-- RAM: `https://hyperpc.cl/wp-content/uploads/2025/03/Kingston-Fury-Beast-RGB-DDR5-HyperPC-300x300.jpg` (para todas las opciones de RAM)
+- CPU: `https://hyperpc.cl/wp-content/uploads/2025/04/intel-core-i5-14-300x300.jpg`
+- RAM: `https://hyperpc.cl/wp-content/uploads/2025/03/Kingston-Fury-Beast-RGB-DDR5-HyperPC-300x300.jpg`
 - HDD 2TB Seagate Barracuda: `https://m.media-amazon.com/images/I/71V1jd3s9dL._AC_SL1500_.jpg`
 - Refrigeración aire (Peerless Assassin 120 SE): `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDfuiLyzhoJ23gBPuD9w11yRa3T-DXrH8hOQ&s`
 - Refrigeración líquida (Asus TUF LC II 240): `https://http2.mlstatic.com/D_NQ_NP_966722-MLA95527000132_102025-O.webp`
@@ -60,7 +71,7 @@ Imágenes mapeadas:
 - Windows 11 Home: `https://cl-cenco-pim-resizer.ecomm.cencosud.com/.../MKN7LEJRL8-1-1.png`
 - Windows 11 Pro: `https://cdnx.jumpseller.com/compuelite/image/35452057/thumb/610/610?1684525397`
 
-Mejoras visuales:
+Mejoras visuales
 - Imágenes del gabinete sin recorte usando `object-fit: contain` y miniaturas clicables.
 - Estilos de tarjetas en `src/pages/App.css` para una UI limpia y responsiva.
 
@@ -72,7 +83,8 @@ Incluye dos secciones principales:
    - `src/components/Dashboard/PCBuilderManagement.jsx`
    - Integrado en el sidebar y enrutado del panel.
 
-Acceso rápido: visitar `http://localhost:5173/dashboard` y elegir "Arma tu PC" en el sidebar.
+Acceso rápido
+- Visitar `http://localhost:5173/dashboard` y elegir "Arma tu PC" en el sidebar.
 
 Instalación y uso
 1. Requisitos: Node.js 18+
@@ -87,5 +99,5 @@ Pruebas y calidad
 - Lint: `npm run lint`
 
 Notas
-- Este proyecto usa datos locales para el configurador en `src/data/pcBuilder.js`.
+- El configurador usa datos locales en `src/data/pcBuilder.js`.
 - La sección admin de "Arma tu PC" es de lectura; se puede extender a CRUD siguiendo el patrón de `ProductsManagement`.
