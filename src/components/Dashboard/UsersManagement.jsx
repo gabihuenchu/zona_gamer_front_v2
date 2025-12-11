@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { UserService } from '../../services/userService';
+import { AuthService } from '../../services/authService';
 
 const UsersManagement = () => {
     const [users, setUsers] = useState([]);
     const [stats, setStats] = useState({ total: 0, admins: 0, active: 0 });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const [showAddModal, setShowAddModal] = useState(false);
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({ mode: 'onChange' });
 
     
 
@@ -45,7 +51,23 @@ const UsersManagement = () => {
         }
     };
 
-    
+    const onAddSubmit = async (data) => {
+        try {
+            await AuthService.register({
+                email: data.email,
+                password: data.password,
+                nombre: data.nombre,
+                apellido: data.apellido,
+                numeroDeTelefono: data.numeroDeTelefono,
+            });
+            alert('Usuario creado');
+            setShowAddModal(false);
+            reset();
+            await loadData();
+        } catch (e) {
+            alert('Error al crear usuario');
+        }
+    };
 
     const toggleRole = async (user) => {
         try {
@@ -77,11 +99,16 @@ const UsersManagement = () => {
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">
-                <div>
-                    <h2 className="text-3xl font-bold !text-gray-800">Gestión de Usuarios</h2>
-                    <p className="text-gray-500 mt-1">Administra permisos, roles y estado</p>
+                <div className="flex items-center gap-4">
+                    <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-3 !px-6 !py-3 bg-blue-600 text-white !rounded-xl hover:bg-blue-700 transition-all shadow-md hover:shadow-lg font-medium">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                        <span>Crear Usuario</span>
+                    </button>
+                    <div>
+                        <h2 className="text-3xl font-bold !text-gray-800">Gestión de Usuarios</h2>
+                        <p className="text-gray-500 mt-1">Administra permisos, roles y estado</p>
+                    </div>
                 </div>
-                
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 !gap-6">
@@ -136,6 +163,75 @@ const UsersManagement = () => {
                     </div>
                 )}
             </div>
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="sticky top-0 bg-white border-b border-gray-200 !px-6 !py-4 flex justify-between items-center">
+                            <h3 className="text-2xl font-bold !text-gray-800">Crear Usuario</h3>
+                            <button onClick={() => { setShowAddModal(false); reset(); }} className="!text-gray-400 hover:text-gray-600 transition-colors">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmit(onAddSubmit)} className="!p-6 !space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium !text-gray-900 mb-2">Email *</label>
+                                <input type="email" className="w-full !px-4 !py-2 !text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    {...register('email', {
+                                        required: { value: true, message: 'El email es obligatorio' },
+                                        pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Email invalido' },
+                                    })}
+                                />
+                                {errors.email && (<p className="text-red-500 text-sm mt-2">{errors.email.message}</p>)}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium !text-gray-900 mb-2">Contraseña *</label>
+                                <input type="password" className="w-full !px-4 !py-2 !text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    {...register('password', {
+                                        required: { value: true, message: 'Contraseña debe ser obligatoria' },
+                                        minLength: { value: 6, message: 'La contraseña debe tener al menos 6 caracteres' },
+                                    })}
+                                />
+                                {errors.password && (<p className="text-red-500 text-sm mt-2">{errors.password.message}</p>)}
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium !text-gray-900 mb-2">Nombre *</label>
+                                    <input type="text" className="w-full !px-4 !py-2 !text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        {...register('nombre', {
+                                            required: { value: true, message: 'El nombre es obligatorio' },
+                                            minLength: { value: 2, message: 'El nombre debe tener entre 2 a 50 caracteres' },
+                                            maxLength: { value: 50, message: 'El nombre debe tener entre 2 a 50 caracteres' },
+                                        })}
+                                    />
+                                    {errors.nombre && (<p className="text-red-500 text-sm mt-2">{errors.nombre.message}</p>)}
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium !text-gray-900 mb-2">Apellido *</label>
+                                    <input type="text" className="w-full !px-4 !py-2 !text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        {...register('apellido', {
+                                            required: { value: true, message: 'El apellido es obligatorio' },
+                                            minLength: { value: 2, message: 'El apellido debe tener entre 2 a 50 caracteres' },
+                                            maxLength: { value: 50, message: 'El apellido debe tener entre 2 a 50 caracteres' },
+                                        })}
+                                    />
+                                    {errors.apellido && (<p className="text-red-500 text-sm mt-2">{errors.apellido.message}</p>)}
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium !text-gray-900 mb-2">Número de Teléfono</label>
+                                <input type="tel" className="w-full !px-4 !py-2 !text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    placeholder="+56912345678"
+                                    {...register('numeroDeTelefono', {
+                                        pattern: { value: /^\+?56?[0-9]{9}$/, message: 'Numero de telefono chileno invalido (ej: +56912345678 o 912345678)' },
+                                    })}
+                                />
+                                {errors.numeroDeTelefono && (<p className="text-red-500 text-sm mt-2">{errors.numeroDeTelefono.message}</p>)}
+                            </div>
+                            <button type="submit" className="!mt-2 inline-flex items-center gap-2 !px-4 !py-2 bg-blue-600 text-white !rounded-xl hover:bg-blue-700 transition-all shadow-md">Guardar</button>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             
         </div>
