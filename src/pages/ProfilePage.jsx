@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Navbar from '../components/Navbar/Navbar'
 import { UserService } from '../services/userService'
-import { usersCRUD } from '../lib/api/usersCRUD'
 import { useNavigate } from 'react-router-dom'
 
 export default function ProfilePage() {
@@ -18,49 +17,29 @@ export default function ProfilePage() {
 
     useEffect(() => {
         loadProfile()
-    }, [])
+    }, [loadProfile])
 
-    const loadProfile = async () => {
+    const loadProfile = useCallback(async () => {
         setLoading(true)
         try {
-            // Intentar API
-            try {
-                const profile = await UserService.getMyProfile()
-                if (profile) {
-                    setUser(profile)
-                    setFormData({
-                        name: profile.name || '',
-                        lastname: profile.lastname || '',
-                        phone: profile.phone || '',
-                        address: profile.address || ''
-                    })
-                    setLoading(false)
-                    return
-                }
-            } catch {
-                // Fallo API
+            const profile = await UserService.getMyProfile()
+            if (!profile) {
+                navigate('/login')
+                return
             }
-
-            // Intentar Local Storage
-            const localData = localStorage.getItem('userData')
-            if (localData) {
-                const parsed = JSON.parse(localData)
-                setUser(parsed)
-                setFormData({
-                    name: parsed.name || '',
-                    lastname: parsed.lastname || '',
-                    phone: parsed.phone || '',
-                    address: parsed.address || ''
-                })
-            } else {
-                navigate('/login') // Si no hay usuario, ir a login
-            }
+            setUser(profile)
+            setFormData({
+                name: profile.name || '',
+                lastname: profile.lastname || '',
+                phone: profile.phone || '',
+                address: profile.address || ''
+            })
         } catch (error) {
             console.error(error)
         } finally {
             setLoading(false)
         }
-    }
+    }, [navigate])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -72,27 +51,17 @@ export default function ProfilePage() {
 
     const handleSave = async () => {
         try {
-            // Actualizar localmente primero
-            if (user.id) {
-                // Si es un usuario local del usersCRUD
-                await usersCRUD.update(user.id, {
-                    name: formData.name,
-                    lastname: formData.lastname,
-                    phone: formData.phone,
-                    address: formData.address
-                })
-                
-                // Actualizar estado local y localStorage para reflejar cambios inmediatos
-                const updatedUser = { ...user, ...formData }
-                localStorage.setItem('userData', JSON.stringify(updatedUser))
-                setUser(updatedUser)
-                setIsEditing(false)
-                alert("Perfil actualizado correctamente")
-            } else {
-                 // Si es API, aquí iría la llamada a UserService.updateProfile(formData)
-                 // Como fallback simulamos
-                 alert("Funcionalidad de API pendiente de implementación")
-            }
+            await UserService.updateMyProfile({
+                nombre: formData.name,
+                apellido: formData.lastname,
+                numeroDeTelefono: formData.phone,
+                address: formData.address
+            })
+            const updatedUser = { ...user, ...formData }
+            localStorage.setItem('userData', JSON.stringify(updatedUser))
+            setUser(updatedUser)
+            setIsEditing(false)
+            alert("Perfil actualizado correctamente")
         } catch (error) {
             console.error(error)
             alert("Error al actualizar el perfil")

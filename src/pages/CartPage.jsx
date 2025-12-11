@@ -4,8 +4,6 @@ import Navbar from '../components/Navbar/Navbar'
 import { CartService } from '../services/cartService'
 import { ProductService } from '../services/productService'
 import { UserService } from '../services/userService'
-import { LocalCart } from '../lib/cart/localCart'
-import { getAuthToken, isServerAuthToken } from '../services/api'
 
 export default function CartPage() {
   const [loading, setLoading] = useState(true)
@@ -20,9 +18,7 @@ export default function CartPage() {
     setLoading(true)
     setError(null)
     try {
-      const token = getAuthToken()
-      const useServer = isServerAuthToken(token)
-      const c = useServer ? await CartService.getCart() : await LocalCart.getCart()
+      const c = await CartService.getCart()
       const items = Array.isArray(c.items) ? c.items : []
       const immediate = { items, totalItems: c.totalItems || items.reduce((s, i) => s + (i.quantity || 0), 0), totalPrice: c.totalPrice || items.reduce((s, i) => s + (Number(i.price || 0) * (i.quantity || 0)), 0) }
       setCart(immediate)
@@ -81,34 +77,22 @@ export default function CartPage() {
   }, [location.pathname, location.state, navigate])
 
   async function increment(productId, quantity) {
-    const token = getAuthToken()
-    const useServer = isServerAuthToken(token)
-    if (useServer) await CartService.incrementItem(productId, quantity)
-    else await LocalCart.updateItem(productId, quantity + 1)
+    await CartService.incrementItem(productId, quantity)
     await loadCart()
   }
 
   async function decrement(productId, quantity) {
-    const token = getAuthToken()
-    const useServer = isServerAuthToken(token)
-    if (useServer) await CartService.decrementItem(productId, quantity)
-    else await LocalCart.updateItem(productId, quantity - 1)
+    await CartService.decrementItem(productId, quantity)
     await loadCart()
   }
 
   async function removeItem(productId) {
-    const token = getAuthToken()
-    const useServer = isServerAuthToken(token)
-    if (useServer) await CartService.removeFromCart(productId)
-    else await LocalCart.removeItem(productId)
+    await CartService.removeFromCart(productId)
     await loadCart()
   }
 
   async function clearAll() {
-    const token = getAuthToken()
-    const useServer = isServerAuthToken(token)
-    if (useServer) await CartService.clearCart()
-    else await LocalCart.clearCart()
+    await CartService.clearCart()
     await loadCart()
   }
 
@@ -219,4 +203,3 @@ export default function CartPage() {
     </div>
   )
 }
-

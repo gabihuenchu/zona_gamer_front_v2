@@ -1,6 +1,4 @@
 import { CartService } from '../../services/cartService'
-import { LocalCart } from '../../lib/cart/localCart'
-import { getAuthToken, isServerAuthToken } from '../../services/api'
 
 export default function ProductCard({ product }) {
     const priceValue = typeof product?.price === 'number' ? product.price : Number(product?.price) || 0
@@ -9,25 +7,9 @@ export default function ProductCard({ product }) {
         const id = product?.id || product?._id || product?.productId
         if (!id) return
         try {
-            const token = getAuthToken()
-            const useServer = isServerAuthToken(token)
-            if (useServer) {
-                await CartService.addToCart(id, 1)
-            } else {
-                await LocalCart.addItem(id, 1, {
-                    name: product?.name,
-                    price: product?.price,
-                    imageUrl: product?.imageUrl,
-                    description: product?.description,
-                })
-            }
+            await CartService.addToCart(id, 1)
         } catch {
-            await LocalCart.addItem(id, 1, {
-                name: product?.name,
-                price: product?.price,
-                imageUrl: product?.imageUrl,
-                description: product?.description,
-            })
+            alert("No se pudo añadir al carrito")
         }
         alert("Producto añadido correctamente")
     }

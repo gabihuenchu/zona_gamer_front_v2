@@ -2,7 +2,6 @@ import logo from '../../assets/logo_02.png'
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from 'react'
 import { CartService } from '../../services/cartService'
-import { LocalCart } from '../../lib/cart/localCart'
 import { getAuthToken, isServerAuthToken } from '../../services/api'
 import { UserService } from '../../services/userService'
 import { AuthService } from '../../services/authService'
@@ -16,11 +15,7 @@ function Navbar() {
   
 
     useEffect(() => {
-        const token = getAuthToken()
-        const useServer = isServerAuthToken(token)
-        const fn = useServer ? CartService.getCartItemCount : LocalCart.getItemCount
-        fn().then((n) => setCount(n)).catch(() => setCount(0))
-        
+        CartService.getCartItemCount().then((n) => setCount(n)).catch(() => setCount(0))
         loadUser()
     }, [location.pathname])
 

@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form"
 import Navbar from "../Navbar/Navbar"
-import { usersCRUD } from "../../lib/api/usersCRUD"
 import { AuthService } from "../../services/authService"
 import { useNavigate } from "react-router-dom"
 
@@ -18,33 +17,14 @@ const Register = () => {
 
     const onSubmit = async (data) => {
         try {
-            let apiSuccess = false;
-            try {
-                await AuthService.register({
-                    nombre: data.nombre,
-                    apellido: data.apellido,
-                    email: data.email,
-                    password: data.password
-                });
-                apiSuccess = true;
-                alert("Registro exitoso");
-                navigate("/login");
-            } catch (error) {
-                console.warn("API register failed, trying local", error);
-            }
-
-            if (apiSuccess) return;
-
-            await usersCRUD.create({
-                name: `${data.nombre} ${data.apellido}`.trim(),
+            await AuthService.register({
+                nombre: data.nombre,
+                apellido: data.apellido,
                 email: data.email,
-                role: 'user',
-                status: 'active',
-                active: true,
-                password: data.password // Guardamos la contraseña para el login local
-            })
-            alert("Registro local exitoso")
-            navigate("/login")
+                password: data.password
+            });
+            alert("Registro exitoso");
+            navigate("/login");
         } catch (error) {
             console.error(error)
             alert("Error al registrar usuario")

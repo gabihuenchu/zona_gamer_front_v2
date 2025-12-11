@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar/Navbar'
 import { UserService } from '../services/userService'
 import { CartService } from '../services/cartService'
-import { LocalCart } from '../lib/cart/localCart'
-import { getAuthToken, isServerAuthToken } from '../services/api'
 import { OrderService } from '../services/orderService'
 
 export default function CheckoutPage() {
@@ -19,9 +17,9 @@ export default function CheckoutPage() {
 
     useEffect(() => {
         loadData()
-    }, [])
+    }, [loadData])
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         setLoading(true)
         try {
             // 1. Cargar Usuario
@@ -48,9 +46,7 @@ export default function CheckoutPage() {
             setFormData(prev => ({ ...prev, address: currentUser.address || '' }))
 
             // 2. Cargar Carrito (solo para el resumen)
-            const token = getAuthToken()
-            const useServer = isServerAuthToken(token)
-            const c = useServer ? await CartService.getCart() : await LocalCart.getCart()
+            const c = await CartService.getCart()
             const items = Array.isArray(c.items) ? c.items : []
             const totalPrice = c.totalPrice || items.reduce((s, i) => s + (Number(i.price || 0) * (i.quantity || 0)), 0)
             const totalItems = c.totalItems || items.reduce((s, i) => s + (i.quantity || 0), 0)
@@ -67,7 +63,7 @@ export default function CheckoutPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [navigate])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -84,44 +80,33 @@ export default function CheckoutPage() {
             return
         }
 
-        const token = getAuthToken()
-        const useServer = isServerAuthToken(token)
+        try {
+            const order = await OrderService.checkout({
+                deliveryAddress: address,
+                metodoDePago: 'CREDIT_CARD',
+                notes: formData.notes || ''
+            })
 
-        if (useServer) {
-            try {
-                const order = await OrderService.checkout({
-                    deliveryAddress: address,
-                    metodoDePago: 'CREDIT_CARD',
-                    notes: formData.notes || ''
-                })
-
-                if (user.id && address !== user.address) {
-                    try {
-                        await UserService.updateMyProfile({ address })
-                        const updatedUser = { ...user, address }
-                        localStorage.setItem('userData', JSON.stringify(updatedUser))
-                    } catch (e) {
-                        console.error(e)
-                    }
+            if (user.id && address !== user.address) {
+                try {
+                    await UserService.updateMyProfile({ address })
+                    const updatedUser = { ...user, address }
+                    localStorage.setItem('userData', JSON.stringify(updatedUser))
+                } catch (e) {
+                    console.error(e)
                 }
-
-                const totalText = typeof order?.total === 'number' ? order.total.toFixed(2) : Number(order?.total || 0).toFixed(2)
-                const numero = order?.numeroDeOrden ? `Número de Orden: ${order.numeroDeOrden}\n` : ''
-                alert(`¡Pedido realizado con éxito!\n${numero}Total: $${totalText}`)
-
-                await CartService.clearCart()
-                navigate('/')
-                return
-            } catch (e) {
-                const msg = e?.data?.message || e?.message || 'No se pudo procesar el pedido'
-                alert(msg)
-                return
             }
-        }
 
-        alert("¡Pedido realizado con éxito!\n\nGracias por tu compra.")
-        await LocalCart.clearCart()
-        navigate('/')
+            const totalText = typeof order?.total === 'number' ? order.total.toFixed(2) : Number(order?.total || 0).toFixed(2)
+            const numero = order?.numeroDeOrden ? `Número de Orden: ${order.numeroDeOrden}\n` : ''
+            alert(`¡Pedido realizado con éxito!\n${numero}Total: $${totalText}`)
+
+            await CartService.clearCart()
+            navigate('/')
+        } catch (e) {
+            const msg = e?.data?.message || e?.message || 'No se pudo procesar el pedido'
+            alert(msg)
+        }
     }
 
     if (loading) {

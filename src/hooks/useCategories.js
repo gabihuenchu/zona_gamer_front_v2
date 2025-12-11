@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { CategoryService } from '../services/categoryService';
-import { fetchCategories } from '../lib/api/productsApi';
 
 // Carga de categorías (una sola vez)
 export function useCategories() {
@@ -20,19 +19,7 @@ export function useCategories() {
         children: mapTree(n.children ?? n.subcategorias ?? []),
       }));
 
-    (async () => {
-      try {
-        const cats = await fetchCategories();
-        if (!mounted) return;
-        const normalized = Array.isArray(cats)
-          ? cats.map((c) => ({ id: c.id, name: c.name, children: c.children || [] }))
-          : [];
-        setData(normalized);
-        setLoading(false);
-      } catch (error) {
-        console.error(error)
-      }
-    })();
+    
 
     CategoryService.getCategoryTree()
       .then((tree) => {

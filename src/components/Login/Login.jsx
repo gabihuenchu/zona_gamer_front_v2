@@ -3,8 +3,6 @@ import Navbar from "../Navbar/Navbar"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { AuthService } from "../../services/authService"
-import { setAuthToken } from "../../services/api"
-import { usersCRUD } from "../../lib/api/usersCRUD"
 import { UserService } from "../../services/userService"
 
 const Login = () => {
@@ -54,26 +52,6 @@ const Login = () => {
                 setTimeout(() => {
                     alert("Inicio de sesión exitoso")
                     if (isAdmin || userRole === 'admin' || userRole === 'ROLE_ADMIN') {
-                        navigate("/dashboard")
-                    } else {
-                        navigate("/")
-                    }
-                }, 100)
-                return
-            }
-
-            // Si no, buscar en usersCRUD local
-            const allUsers = await usersCRUD.getAll()
-            const localUser = allUsers.find(u => u.email === data.email && u.password === data.password)
-            
-            if (localUser) {
-                // Simular sesión local
-                localStorage.setItem('userData', JSON.stringify({ ...localUser, token: 'local-token' }))
-                setAuthToken('local-token')
-                
-                setTimeout(() => {
-                    alert("Inicio de sesión exitoso")
-                    if (localUser.role === 'admin' || localUser.role === 'ROLE_ADMIN') {
                         navigate("/dashboard")
                     } else {
                         navigate("/")

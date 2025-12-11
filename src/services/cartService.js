@@ -133,7 +133,7 @@ const normalizeCart = (cartData) => {
     cartItemId: item.cartItemId || item.id,
     
     // Información del producto (mapeo español → inglés)
-    name: item.nombreProducto || item.name,
+    name: item.productName || item.nombreProducto || item.name,
     price: item.precio || item.price,
     imageUrl: item.imageUrl || item.imagenUrl,
     description: item.descripcion || item.description,
@@ -141,14 +141,17 @@ const normalizeCart = (cartData) => {
     // Cantidad y subtotal
     quantity: item.quantity || item.cantidad || 1,
     subtotal: item.subtotal,
+    disponibilidad: item.disponibilidad,
   }));
 
   return {
-    cartId: cartData.cartId || cartData.id,
+    cartId: cartData.id || cartData.cartId,
     userId: cartData.userId || cartData.usuarioId,
     items,
-    totalItems: cartData.totalItems,
-    totalPrice: cartData.totalPrice,
+    totalItems: cartData.totalItems || 0,
+    totalPrice: (cartData.total != null ? cartData.total : cartData.totalPrice) || 0,
+    subtotal: cartData.subtotal || 0,
+    iva: cartData.iva || 0,
   };
 };
 

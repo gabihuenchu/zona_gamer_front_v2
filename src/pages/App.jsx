@@ -73,7 +73,7 @@ function App() {
               Construimos la PC gaming de tus sueños con componentes de última
               generación.
             </p>
-            <button>Comenzar Proyecto</button>
+            <button>(Próximamente...)</button>
           </div>
 
           <div className="service-card blue">
@@ -83,7 +83,7 @@ function App() {
               Reparación especializada, mantenimiento y optimización de equipos
               gaming.
             </p>
-            <button>Solicitar Servicio</button>
+            <button>(Próximamente...)</button>
           </div>
 
           <div className="service-card purple">
