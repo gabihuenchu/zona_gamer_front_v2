@@ -101,3 +101,12 @@ Pruebas y calidad
 Notas
 - El configurador usa datos locales en `src/data/pcBuilder.js`.
 - La sección admin de "Arma tu PC" es de lectura; se puede extender a CRUD siguiendo el patrón de `ProductsManagement`.
+
+## Changelog
+
+### v2.1.0 – 2025-12-11
+- feat(users): botón “Crear Usuario” en `UsersManagement` y modal de alta con `react-hook-form`.
+- feat(users): alta de usuarios conectada a `AuthService.register` y recarga de lista desde la API.
+- refactor(auth): `AuthService.register` deja de guardar automáticamente el JWT para evitar login automático.
+- fix(products): visualización de nombres en `ProductsManagement` usando `nombre`/`nombreProducto` del backend.
+- style/build: orden de `@import` en `App.css` y ajuste de `vite.config.js` para `css.transformer='postcss'`.
