@@ -17,7 +17,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         loadProfile()
-    }, [loadProfile])
+    }, [])
 
     const loadProfile = useCallback(async () => {
         setLoading(true)

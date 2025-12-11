@@ -29,11 +29,6 @@ const register = async (userData) => {
     requiresAuth: false,
   });
 
-  if (response.token) {
-    setAuthToken(response.token);
-    localStorage.setItem('userData', JSON.stringify(response));
-  }
-
   return response;
 };
 

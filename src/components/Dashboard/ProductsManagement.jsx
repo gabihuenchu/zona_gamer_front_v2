@@ -44,8 +44,8 @@ const ProductsManagement = () => {
             const normalized = Array.isArray(productsData)
                 ? productsData.map((prod) => ({
                     id: prod.id ?? prod.productoId ?? prod.productId ?? prod._id ?? String(Math.random()),
-                    name: prod.name ?? prod.nombreProducto ?? prod.title ?? 'Producto',
-                    description: prod.description ?? prod.descripcion ?? '',
+                    name: prod.nombre ?? prod.nombreProducto ?? prod.name ?? prod.title ?? 'Producto',
+                    description: prod.descripcion ?? prod.descripcionProducto ?? prod.description ?? '',
                     price: prod.price ?? prod.precio ?? 0,
                     imageUrl: prod.imageUrl ?? prod.imagenUrl ?? '',
                     categoryId: prod.categoryId ?? prod.categoriaId ?? (prod.category ? (prod.category.id ?? prod.category.categoriaId) : null),
